@@ -1,0 +1,84 @@
+#!/bin/bash
+
+export PRIVATE_IP=$(ip addr show eth0 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
+
+installed ()
+{
+    echo
+    echo '#'
+    echo '# Greylog is installed and configured'
+}
+
+echo
+echo '#'
+echo '# Testing to see if Greylog is running yet'
+echo '#'
+
+GREYLOGRESPONSIVE=0
+while [ $GREYLOGRESPONSIVE != 1 ]; do
+    echo -n '.'
+
+    # test the default u/p
+    curl -fs --retry 7 --retry-delay 3 http://127.0.0.1:9000 &> /dev/null
+    if [ $? -eq 0 ]; then
+        let GREYLOGRESPONSIVE=1
+    else
+        sleep .7
+    fi
+done
+sleep 1
+
+echo
+echo '#'
+echo '# Checking Consul availability'
+echo '#'
+
+if [[ $CONSUL_IP && ${CONSUL_IP-x} ]]
+    then
+    export CONSUL_IP=$CONSUL_IP
+    if [[ $CONSUL_PORT && ${CONSUL_PORT-x} ]]
+        then
+        export CONSUL_PORT=$CONSUL_PORT
+    else
+        export CONSUL_PORT=8500
+    fi
+else
+    export CONSUL_IP=consul
+    export CONSUL_PORT=8500
+fi
+
+curl -fs --retry 7 --retry-delay 3 http://$CONSUL_IP:$CONSUL_PORT/v1/agent/services &> /dev/null
+if [ $? -ne 0 ]
+then
+    echo '#'
+    echo '# Consul is required, but unreachable'
+    echo '#'
+    exit
+else
+    echo '# Consul instance found and responsive'
+    echo '#'
+fi
+
+GREYLOGRESPONSIVE=0
+while [ $GREYLOGRESPONSIVE != 1 ]; do
+    echo -n '.'
+
+    # test the default u/p
+    curl -fs --retry 7 --retry-delay 3 http://127.0.0.1:9000 &> /dev/null
+    if [ $? -eq 0 ]; then
+        let GREYLOGRESPONSIVE=1
+    else
+        sleep .7
+    fi
+done
+sleep 1
+
+echo
+echo '#'
+echo '# Registering service instance'
+echo '#'
+
+curl -f --retry 7 --retry-delay 3 http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register -d "$(printf '{"ID":"greylog-server-%s","Name":"greylog-server","Address":"%s","Port":12201}' $PRIVATE_IP $PRIVATE_IP)"
+curl -f --retry 7 --retry-delay 3 http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register -d "$(printf '{"ID":"greylog-web-%s","Name":"greylog-web","Address":"%s","Port":9000}' $PRIVATE_IP $PRIVATE_IP)"
+
+installed
