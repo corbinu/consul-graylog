@@ -6,22 +6,22 @@ installed ()
 {
     echo
     echo '#'
-    echo '# Greylog is installed and configured'
+    echo '# Graylog is installed and configured'
 }
 
 echo
 echo '#'
-echo '# Testing to see if Greylog is running yet'
+echo '# Testing to see if Graylog is running yet'
 echo '#'
 
-GREYLOGRESPONSIVE=0
-while [ $GREYLOGRESPONSIVE != 1 ]; do
+GRAYLOGRESPONSIVE=0
+while [ $GRAYLOGRESPONSIVE != 1 ]; do
     echo -n '.'
 
     # test the default u/p
     curl -fs --retry 7 --retry-delay 3 http://127.0.0.1:9000 &> /dev/null
     if [ $? -eq 0 ]; then
-        let GREYLOGRESPONSIVE=1
+        let GRAYLOGRESPONSIVE=1
     else
         sleep .7
     fi
@@ -59,14 +59,14 @@ else
     echo '#'
 fi
 
-GREYLOGRESPONSIVE=0
-while [ $GREYLOGRESPONSIVE != 1 ]; do
+GRAYLOGRESPONSIVE=0
+while [ $GRAYLOGRESPONSIVE != 1 ]; do
     echo -n '.'
 
     # test the default u/p
     curl -fs --retry 7 --retry-delay 3 http://127.0.0.1:9000 &> /dev/null
     if [ $? -eq 0 ]; then
-        let GREYLOGRESPONSIVE=1
+        let GRAYLOGRESPONSIVE=1
     else
         sleep .7
     fi
@@ -78,7 +78,7 @@ echo '#'
 echo '# Registering service instance'
 echo '#'
 
-curl -f --retry 7 --retry-delay 3 http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register -d "$(printf '{"ID":"greylog-server-%s","Name":"greylog-server","Address":"%s","Port":12201}' $PRIVATE_IP $PRIVATE_IP)"
-curl -f --retry 7 --retry-delay 3 http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register -d "$(printf '{"ID":"greylog-web-%s","Name":"greylog-web","Address":"%s","Port":9000}' $PRIVATE_IP $PRIVATE_IP)"
+curl -f --retry 7 --retry-delay 3 http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register -d "$(printf '{"ID":"graylog-server-%s","Name":"graylog-server","Address":"%s","Port":12201}' $PRIVATE_IP $PRIVATE_IP)"
+curl -f --retry 7 --retry-delay 3 http://$CONSUL_IP:$CONSUL_PORT/v1/agent/service/register -d "$(printf '{"ID":"graylog-web-%s","Name":"graylog-web","Address":"%s","Port":9000}' $PRIVATE_IP $PRIVATE_IP)"
 
 installed

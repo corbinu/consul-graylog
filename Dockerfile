@@ -1,11 +1,11 @@
 #
-# Consul Greylog
+# Consul Graylog
 #
 FROM 		graylog2/allinone
 MAINTAINER 	Corbin Uselton <corbinu@decimal.io>
 
 COPY bin/* /usr/local/bin/
 
-ENTRYPOINT ["greylog-start"]
+ENTRYPOINT ["graylog-start"]
 
-CMD ["greylog-server"]
+CMD ["graylog-server"]

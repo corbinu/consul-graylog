@@ -1,6 +1,6 @@
-Consul Mongo
+Consul Graylog
 ======================
-This Docker container is setup to run Mongo with Consul for service discovery and health monitoring.
+This Docker container is setup to run Graylog with Consul for service discovery and health monitoring.
 
 It has also been optimized to run on Joyent's [Triton](https://www.joyent.com/blog/understanding-triton-containers), however it will always also support strait Docker and boot2docker.
 
@@ -10,7 +10,7 @@ It can be run on its own simply via:
 
 ```
 docker run -d  -p 8400 -p 8500 -p 8600 --name consul progrium/consul -server -bootstrap -ui-dir /ui
-docker run -d --name m1 -p 9000 --link consul:consul corbinu/consul-greylog
+docker run -d --name gl1 -p 9000 --link consul:consul corbinu/consul-graylog
 ```
 
 Consul will UI will be available on port mapped to 8500
@@ -23,12 +23,12 @@ Consul will UI will be available on port mapped to 8500
 [Check for registered instances of a named service](https://www.consul.io/docs/agent/http/catalog.html#catalog_service)
 
 ```bash
-curl -v http://consul:8500/v1/catalog/service/mongo | json -aH ServiceAddress
+curl -v http://consul:8500/v1/catalog/service/graylog | json -aH ServiceAddress
 ```
 
 [Register an instance of a service](https://www.consul.io/docs/agent/http/catalog.html#catalog_register)
 
 ```bash
 export MYIP=$(ip addr show eth0 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
-curl http://consul:8500/v1/agent/service/register -d "$(printf '{"ID": "mongo-%s","Name": "mongo","Address": "%s"}' $MYIP $MYIP)"
+curl http://consul:8500/v1/agent/service/register -d "$(printf '{"ID": "graylog-%s","Name": "graylog","Address": "%s"}' $MYIP $MYIP)"
 ```
