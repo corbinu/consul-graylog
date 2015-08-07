@@ -4,7 +4,7 @@
 
 set -e
 
-if [ "$1" = 'greylog-server' ]
+if [ "$1" = 'graylog-server' ]
 then
 
     if [ "$(id -u)" != "0" ]; then
@@ -12,7 +12,7 @@ then
         exit 1
     fi
 
-    /usr/local/bin/greylog-bootstrap &
+    /usr/local/bin/graylog-bootstrap &
 
     # Start Greylog
     /opt/graylog/embedded/share/docker/my_init
